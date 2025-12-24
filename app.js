@@ -552,35 +552,44 @@ async function runBackwardsTimer(total) {
   const triggerAt = randInt(1, Math.max(1, total - 2));
   const upBy = randInt(0, 8);
 
-  let t = total;
-  while (t >= 0) {
+  let didReverse = false;
+
+  for (let t = total; t >= 0; t--) {
     timerDisplay.textContent = String(t).padStart(2, "0");
 
-    if (t === triggerAt && upBy > 0) {
+    if (!didReverse && upBy > 0 && t === triggerAt) {
+      didReverse = true;
+
+      // count up from current t by upBy (once)
       for (let u = 1; u <= upBy; u++) {
         await sleep(1000);
         timerDisplay.textContent = String(t + u).padStart(2, "0");
       }
+
+      // after counting up, resume down from (t + upBy)
+      // we achieve this by setting t to that value and letting the loop continue
       t = t + upBy;
     }
 
     await sleep(1000);
-    t--;
   }
 }
 
+
 async function runGlitchNumbersTimer() {
   const iterations = randInt(10, 30);
-  let first = randInt(0, 10);
+  const first = randInt(0, 10);
+
   timerDisplay.textContent = String(first).padStart(2, "0");
-  await sleep(700);
+  await sleep(1000); // slower intro
 
   for (let i = 1; i <= iterations; i++) {
-    await sleep(350);
+    await sleep(800); // slower flicker
     const num = (i === iterations) ? 0 : randInt(0, 99);
     timerDisplay.textContent = String(num).padStart(2, "0");
   }
 }
+
 
 /***********************
  * FAIR TARGET SELECTION
