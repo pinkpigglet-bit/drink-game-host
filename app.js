@@ -32,7 +32,7 @@ const ROLES = [
     id: "hitler",
     name: "Hitler",
     desc: `When you heil, everyone watching must follow, otherwise they must drink.`,
-    img: "assets/roles/hitler.jpg"
+    img: "assets/roles/Hitler.jpg"
   },
   {
     id: "mime",
