@@ -9,13 +9,14 @@
 <body>
   <main class="wrap">
 
-    <header class="topbar">
-      <h1>Drink Game</h1>
-      <button id="openRulesBtn" class="ghost hidden">Rules</button>
-    </header>
+    <!-- TITLE SLIDE -->
+    <section id="titleView" class="card titleSlide">
+      <div class="titleBig">Jacob’s Drinking Game</div>
+      <button id="titleNextBtn" class="nextArrow" aria-label="Next">→</button>
+    </section>
 
-    <!-- SETUP -->
-    <section id="setupView" class="card">
+    <!-- SETUP SLIDE -->
+    <section id="setupView" class="card hidden">
       <h2>Setup</h2>
 
       <label>Number of players</label>
@@ -26,21 +27,49 @@
       <div class="row">
         <button id="startSetupBtn" class="primary">Enter</button>
       </div>
-
-      <p class="hint">Runs on one phone. Mirror/cast to TV if you want everyone watching.</p>
     </section>
 
-    <!-- ROLES REVEAL -->
+    <!-- ROLES SLIDESHOW -->
     <section id="rolesView" class="card hidden">
       <h2>Roles</h2>
-      <div id="rolesList" class="rolesList"></div>
 
-      <div class="row">
-        <button id="continueToRulesBtn" class="primary">Continue</button>
+      <div class="roleSlide">
+        <div class="roleName" id="rolePlayerName">—</div>
+        <div class="roleTitle" id="roleTitle">—</div>
+        <div class="roleDesc" id="roleDesc">—</div>
       </div>
+
+      <div class="small" id="roleProgress">1 / 1</div>
+
+      <button id="rolesNextBtn" class="nextArrow" aria-label="Next">→</button>
     </section>
 
-    <!-- GAME VIEW -->
+    <!-- RULES SLIDE -->
+    <section id="rulesView" class="card hidden">
+      <h2>Rules</h2>
+
+      <div class="playersTableWrap">
+        <table class="playersTable">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Gender</th>
+              <th>Role</th>
+              <th>Points</th>
+              <th>Adjust</th>
+            </tr>
+          </thead>
+          <tbody id="playersTableBody"></tbody>
+        </table>
+      </div>
+
+      <h3>Active rules</h3>
+      <ol id="rulesList" class="rulesList"></ol>
+
+      <button id="rulesNextBtn" class="nextArrow" aria-label="Next">→</button>
+    </section>
+
+    <!-- GAME (EVENT SLIDES) -->
     <section id="gameView" class="card hidden">
       <div class="gameHeader">
         <div>
@@ -86,46 +115,14 @@
         </div>
       </div>
 
-      <div class="row">
-        <button id="nextBtn" class="primary">Next</button>
-      </div>
-
       <div id="winnerArea" class="winnerArea hidden">
         <div class="winnerText" id="winnerText"></div>
         <div class="row">
           <button id="resetBtn" class="primary">Reset Game</button>
         </div>
       </div>
-    </section>
 
-    <!-- RULES MODAL -->
-    <section id="rulesModal" class="modal hidden" role="dialog" aria-modal="true">
-      <div class="modalCard">
-        <div class="modalHeader">
-          <h2>Rules</h2>
-          <button id="closeRulesBtn" class="ghost">Close</button>
-        </div>
-
-        <div class="playersTableWrap">
-          <table class="playersTable">
-            <thead>
-              <tr>
-                <th>Player</th>
-                <th>Gender</th>
-                <th>Role</th>
-                <th>Points</th>
-                <th>Adjust</th>
-              </tr>
-            </thead>
-            <tbody id="playersTableBody"></tbody>
-          </table>
-        </div>
-
-        <h3>Active rules</h3>
-        <ol id="rulesList" class="rulesList"></ol>
-
-        <p class="hint">Rules are “policed” by the players. Keep it light.</p>
-      </div>
+      <button id="nextBtn" class="nextArrow" aria-label="Next">→</button>
     </section>
 
   </main>
@@ -133,3 +130,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
