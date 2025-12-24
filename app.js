@@ -18,18 +18,119 @@
  *   "ALL", "M", "F", or a specific player name later if you want.
  */
 const BASE_RULES = [
-  { target: "ALL", text: "No phones on the table." },
-  { target: "ALL", text: "If you swear, +1 point." },
-  { target: "ALL", text: "If you laugh at your own joke, +1 point." },
+  { target: "ALL", text: "No Drinking with your dominant hand." }
 ];
 
 const ROLES = [
-  { name: "Snake", desc: "If you look them in the eyes, you drink." },
-  { name: "Joker", desc: "If they joke and you laugh, you drink." },
-  { name: "Cop",   desc: "They can call 'Hands up' anytime. Last is punished." },
-  { name: "Ghost", desc: "If you say their name, you drink." },
-  { name: "DJ",    desc: "If they sing a lyric and you continue it, you drink." },
-  { name: "Ref",   desc: "They can call 'Foul!' anytime. First to react loses." },
+  {
+    id: "statue",
+    name: "Statue",
+    desc: "If the Statue freezes and you move or talk first, you drink.",
+    img: "assets/roles/statue.jpg"
+  },
+  {
+    id: "Hitler",
+    name: "Hitler",
+    desc: "When you heil, everyone watching must follow, otherwise they must drink.",
+    img: "assets/roles/hitler.jpg"
+  },
+  {
+    id: "mime",
+    name: "Mime",
+    desc: "If the Mime acts something out and you guess it wrong, you drink.",
+    img: "assets/roles/mime.jpg"
+  },
+  {
+    id: "gaslighter",
+    name: "Gaslighter",
+    desc: "The Gaslighter can deny any rule exists. Anyone who argues drinks.",
+    img: "assets/roles/gaslighter.jpg"
+  },
+  {
+    id: "stalker",
+    name: "Stalker",
+    desc: "If you make eye contact with the stalker while hes stalking you then you drink. If the stalker gets a photo of you deemed "fucking creepy" by the group then you drink twice.",
+    img: "assets/roles/stalker.jpg"
+  },
+
+  {
+    id: "gambler",
+    name: "Gambler",
+    desc: "If anyone makes any bets with you for drinks you must take it on. The gambler gets first pick",
+    img: "assets/roles/gambler.jpg"
+  },
+  {
+    id: "closet gay",
+    name: "closet gay",
+    desc: "The closet gay will pick an action and show the group. When players see them do this action they must match it with their own. Failure to do so will result in a drink.",
+    img: "assets/roles/closetgay.jpg"
+  },
+  {
+    id: "Kim Jong Un",
+    name: "Kim Jong Un",
+    desc: "There is no wrong with the mighty leader. If they see something that they want the others must give it to them or drink.",
+    img: "assets/roles/kimjongun.jpg"
+  },
+  {
+    id: "Dexter",
+    name: "Dexter",
+    desc: "If you are alone with one other person, you may kill them, They stay in that spot until found. If all players are killed then everyone else finished a new vessel.",
+    img: "assets/roles/dexter.jpg"
+  },
+  {
+    id: "Doakes",
+    name: "Doakes",
+    desc: "When you squnit fucking hard at another mother fucker they have to squint back otherwise they drink.",
+    img: "assets/roles/doakes.jpg"
+  },
+  {
+    id: "Darth Vader",
+    name: "Darth Vader",
+    desc: "The force is strong with you. You may use it to "choke" anyone that looks at you, if they break before you finish they drink.",
+    img: "assets/roles/darthvader.jpg"
+  },
+  {
+    id: "Gollum",
+    name: "Gollum",
+    desc: "My precious, if i collect anything of anyone elses i dont have to give it back, but i will for a cost, x amount of drinks.",
+    img: "assets/roles/gollum.jpg"
+  },
+  {
+    id: "Yoda",
+    name: "Yoda",
+    desc: "when yoda speaks to others in his yoda voice they must first try to answer as a wookie, any answers that anger yoda are worth a drink.",
+    img: "assets/roles/yoda.jpg"
+  },
+  {
+    id: "Hulk",
+    name: "Hulk",
+    desc: "If hulk passes you something smashable, you must smash it, or take a drink.",
+    img: "assets/roles/hulk.jpg"
+  },
+  {
+    id: "Simba",
+    name: "Simba",
+    desc: "Once the mark is aquired, anytime a bevarage "simba" is lifted above their head, the other players must sing the chant, otherwise drink.",
+    img: "assets/roles/simba.jpg"
+  },
+  {
+    id: "ET",
+    name: "ET",
+    desc: "If ET, says "phone home", everyone else must send them a text with a number of drinks to take. ET then assigns the drinks to the last to do so.",
+    img: "assets/roles/et.jpg"
+  },
+  {
+    id: "Patrick",
+    name: "Patrick",
+    desc: "Patrick can hide something under something, after giving instruction on what to find and in what location the others must find it. everyone who doesnt find the object drinks.",
+    img: "assets/roles/patrick.jpg"
+  },
+  {
+    id: "Michael",
+    name: "Michael",
+    desc: "Anytime someone is walking with, towards or around, Michael they must perform parkour, any unsatifactory pakour, michael will dish out a drink.",
+    img: "assets/roles/michael.jpg"
+  }
 ];
 
 /***********************
