@@ -142,14 +142,19 @@ nextBtn.addEventListener("click", onNext);
 
 passBtn.addEventListener("click", () => {
   if (!state.activeEvent || state.activeEvent.type !== "SOLO") return;
+
   addPoints(state.activeEvent.targetId, 1);
   finishEvent();
+  startNewEvent(); // auto-advance (no arrow needed)
 });
 
 failBtn.addEventListener("click", () => {
   if (!state.activeEvent || state.activeEvent.type !== "SOLO") return;
+
   finishEvent();
+  startNewEvent(); // auto-advance (no arrow needed)
 });
+
 
 saveRuleBtn.addEventListener("click", () => {
   if (!state.activeEvent || state.activeEvent.type !== "RULE_ADD") return;
@@ -359,13 +364,14 @@ function onNext() {
 
 function startNewEvent() {
   clearEventUI();
-
+  nextBtn.classList.remove("hidden");
   const evType = weightedPick(EVENT_WEIGHTS).type;
 
   if (evType === "TIMER") return startTimerEvent();
   if (evType === "SOLO") return startSoloEvent();
   if (evType === "RULE_ADD") return startRuleAddEvent();
   if (evType === "RULE_REMOVE") return startRuleRemoveEvent();
+  
 
   startSoloEvent();
 }
@@ -468,6 +474,8 @@ function startRuleAddEvent() {
 
   ruleText.value = "";
   ruleControls.classList.remove("hidden");
+  nextBtn.classList.add("hidden");
+
 }
 
 function startRuleRemoveEvent() {
