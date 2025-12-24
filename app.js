@@ -170,6 +170,7 @@ const startSetupBtn = $("startSetupBtn");
 const rolePlayerName = $("rolePlayerName");
 const roleTitle = $("roleTitle");
 const roleDesc = $("roleDesc");
+const roleImg = $("roleImg");
 const roleProgress = $("roleProgress");
 const rolesNextBtn = $("rolesNextBtn");
 
@@ -374,11 +375,21 @@ function assignRolesRandomly() {
  ***********************/
 function renderRoleSlide() {
   const p = state.players[roleIndex];
+
   rolePlayerName.textContent = p.name;
   roleTitle.textContent = p.role?.name ?? "—";
   roleDesc.textContent = p.role?.desc ?? "—";
   roleProgress.textContent = `${roleIndex + 1} / ${state.players.length}`;
+
+  if (p.role?.img) {
+    roleImg.src = p.role.img;
+    roleImg.classList.remove("hidden");
+  } else {
+    roleImg.removeAttribute("src");
+    roleImg.classList.add("hidden");
+  }
 }
+
 
 /***********************
  * RULES SLIDE
