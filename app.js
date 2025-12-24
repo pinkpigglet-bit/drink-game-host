@@ -1,7 +1,12 @@
 /***********************
- * CONFIG (edit these)
+ * CONFIG
  ***********************/
 const WIN_POINTS = 7;
+
+const BASE_RULES = [
+  // Put your hard-coded starting rules here:
+  // { target: "ALL", text: "No phones on the table." },
+];
 
 const ROLES = [
   { name: "Snake", desc: "If you look them in the eyes, you drink." },
@@ -26,7 +31,6 @@ const TIMER_PROMPTS = [
   { label: "Everyone waterfall until the timer stops.", group: "ALL" },
 ];
 
-// Event mix (weights)
 const EVENT_WEIGHTS = [
   { type: "TIMER", weight: 4 },
   { type: "SOLO", weight: 4 },
@@ -37,39 +41,54 @@ const EVENT_WEIGHTS = [
 /***********************
  * STATE
  ***********************/
-let state = {
-  players: [],       // {id, name, gender: "M"|"F", roleName, roleDesc, points}
-  rules: [],         // {target:"ALL"|playerId, text}
-  round: 1,
-  sinceRulesShown: 0,
-  turnsTaken: {},    // playerId -> count (for fairness on targeted events)
-  lastTargetId: null,
-  activeEvent: null, // {type, ...}
-  gameOver: false
-};
+let state = resetState();
+
+let roleIndex = 0; // slideshow index
+
+function resetState() {
+  return {
+    players: [],     // {id, name, gender, roleName, roleDesc, points}
+    rules: [...BASE_RULES], // {target:"ALL"|playerId, text}
+    round: 1,
+    sinceRulesShown: 0,
+    turnsTaken: {},  // playerId -> count (fairness)
+    lastTargetId: null,
+    activeEvent: null,
+    gameOver: false
+  };
+}
 
 /***********************
  * DOM
  ***********************/
 const $ = (id) => document.getElementById(id);
 
+const titleView = $("titleView");
 const setupView = $("setupView");
 const rolesView = $("rolesView");
-const gameView = $("gameView");
-const openRulesBtn = $("openRulesBtn");
+const rulesView = $("rulesView");
+const gameView  = $("gameView");
+
+const titleNextBtn = $("titleNextBtn");
 
 const playerCountSel = $("playerCount");
 const playersForm = $("playersForm");
 const startSetupBtn = $("startSetupBtn");
 
-const rolesList = $("rolesList");
-const continueToRulesBtn = $("continueToRulesBtn");
+const rolePlayerName = $("rolePlayerName");
+const roleTitle = $("roleTitle");
+const roleDesc = $("roleDesc");
+const roleProgress = $("roleProgress");
+const rolesNextBtn = $("rolesNextBtn");
+
+const playersTableBody = $("playersTableBody");
+const rulesListEl = $("rulesList");
+const rulesNextBtn = $("rulesNextBtn");
 
 const roundLabel = $("roundLabel");
 const targetLabel = $("targetLabel");
 const eventTitle = $("eventTitle");
 const eventBody = $("eventBody");
-
 const nextBtn = $("nextBtn");
 
 const timerArea = $("timerArea");
@@ -89,30 +108,34 @@ const removeRuleControls = $("removeRuleControls");
 const removeRuleSelect = $("removeRuleSelect");
 const removeRuleBtn = $("removeRuleBtn");
 
-const rulesModal = $("rulesModal");
-const closeRulesBtn = $("closeRulesBtn");
-const playersTableBody = $("playersTableBody");
-const rulesListEl = $("rulesList");
-
 const winnerArea = $("winnerArea");
 const winnerText = $("winnerText");
 const resetBtn = $("resetBtn");
 
 /***********************
- * INIT UI
+ * INIT
  ***********************/
 initSetup();
 
-openRulesBtn.addEventListener("click", () => showRulesModal());
-closeRulesBtn.addEventListener("click", () => hideRulesModal());
+titleNextBtn.addEventListener("click", () => {
+  showSlide("setup");
+});
 
 startSetupBtn.addEventListener("click", onSetupEnter);
-continueToRulesBtn.addEventListener("click", () => {
-  rolesView.classList.add("hidden");
-  gameView.classList.remove("hidden");
-  openRulesBtn.classList.remove("hidden");
-  showRulesModal(); // show once before game starts
-  renderGame();
+
+rolesNextBtn.addEventListener("click", () => {
+  roleIndex++;
+  if (roleIndex >= state.players.length) {
+    showSlide("rules");
+    renderRulesSlide();
+  } else {
+    renderRoleSlide();
+  }
+});
+
+rulesNextBtn.addEventListener("click", () => {
+  showSlide("game");
+  renderGame(); // shows “Ready”
 });
 
 nextBtn.addEventListener("click", onNext);
@@ -137,25 +160,49 @@ saveRuleBtn.addEventListener("click", () => {
 
   state.rules.push({ target, text });
   ruleText.value = "";
+  renderRulesSlide(); // keep rules updated immediately
   finishEvent();
 });
 
 removeRuleBtn.addEventListener("click", () => {
   if (!state.activeEvent || state.activeEvent.type !== "RULE_REMOVE") return;
   const idx = parseInt(removeRuleSelect.value, 10);
-  if (Number.isNaN(idx)) return;
+  if (Number.isNaN(idx) || idx < 0) return;
 
   state.rules.splice(idx, 1);
+  renderRulesSlide();
   finishEvent();
 });
 
-resetBtn.addEventListener("click", () => resetGame());
+resetBtn.addEventListener("click", () => {
+  // full reset back to title
+  state = resetState();
+  roleIndex = 0;
+  initSetup();
+  showSlide("title");
+});
+
+/***********************
+ * SLIDE NAV
+ ***********************/
+function showSlide(which) {
+  titleView.classList.add("hidden");
+  setupView.classList.add("hidden");
+  rolesView.classList.add("hidden");
+  rulesView.classList.add("hidden");
+  gameView.classList.add("hidden");
+
+  if (which === "title") titleView.classList.remove("hidden");
+  if (which === "setup") setupView.classList.remove("hidden");
+  if (which === "roles") rolesView.classList.remove("hidden");
+  if (which === "rules") rulesView.classList.remove("hidden");
+  if (which === "game")  gameView.classList.remove("hidden");
+}
 
 /***********************
  * SETUP
  ***********************/
 function initSetup() {
-  // player count options
   playerCountSel.innerHTML = "";
   for (let n = 2; n <= 12; n++) {
     const opt = document.createElement("option");
@@ -207,43 +254,30 @@ function onSetupEnter() {
     if (el.dataset.kind === "gender") genders[idx] = el.value;
   }
 
-  // validate names
   for (let i = 0; i < n; i++) {
     if (!names[i]) return alert(`Enter a name for Player ${i + 1}.`);
   }
 
-  // build players
-  state = {
-    players: names.map((nm, i) => ({
-      id: uid(),
-      name: nm,
-      gender: genders[i] || "M",
-      roleName: "",
-      roleDesc: "",
-      points: 0,
-    })),
-    rules: [],
-    round: 1,
-    sinceRulesShown: 0,
-    turnsTaken: {},
-    lastTargetId: null,
-    activeEvent: null,
-    gameOver: false
-  };
+  state.players = names.map((nm, i) => ({
+    id: uid(),
+    name: nm,
+    gender: genders[i] || "M",
+    roleName: "",
+    roleDesc: "",
+    points: 0,
+  }));
 
+  state.turnsTaken = {};
   for (const p of state.players) state.turnsTaken[p.id] = 0;
 
-  // assign roles
   assignRoles();
 
-  // show roles
-  setupView.classList.add("hidden");
-  rolesView.classList.remove("hidden");
-  renderRoles();
+  roleIndex = 0;
+  showSlide("roles");
+  renderRoleSlide();
 }
 
 function assignRoles() {
-  // shuffle roles, reuse if not enough
   const rolePool = shuffle([...ROLES]);
   for (let i = 0; i < state.players.length; i++) {
     const r = rolePool[i % rolePool.length];
@@ -252,18 +286,58 @@ function assignRoles() {
   }
 }
 
-function renderRoles() {
-  rolesList.innerHTML = "";
+function renderRoleSlide() {
+  const p = state.players[roleIndex];
+  rolePlayerName.textContent = p.name;
+  roleTitle.textContent = p.roleName;
+  roleDesc.textContent = p.roleDesc;
+  roleProgress.textContent = `${roleIndex + 1} / ${state.players.length}`;
+}
+
+/***********************
+ * RULES SLIDE
+ ***********************/
+function renderRulesSlide() {
+  // players table
+  playersTableBody.innerHTML = "";
   for (const p of state.players) {
-    const div = document.createElement("div");
-    div.className = "roleCard";
-    div.innerHTML = `
-      <div class="name">${escapeHtml(p.name)}</div>
-      <div class="role">${escapeHtml(p.roleName)}</div>
-      <div class="desc">${escapeHtml(p.roleDesc)}</div>
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(p.name)}</td>
+      <td>${p.gender}</td>
+      <td>${escapeHtml(p.roleName)}</td>
+      <td><b>${p.points}</b></td>
+      <td>
+        <button data-act="minus" data-id="${p.id}">-</button>
+        <button data-act="plus" data-id="${p.id}">+</button>
+      </td>
     `;
-    rolesList.appendChild(div);
+    playersTableBody.appendChild(tr);
   }
+
+  playersTableBody.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      const act = btn.dataset.act;
+      addPoints(id, act === "plus" ? 1 : -1);
+      renderRulesSlide();
+      renderGame();
+    });
+  });
+
+  // ordered list auto-numbers; removal automatically re-numbers
+  rulesListEl.innerHTML = "";
+  state.rules.forEach(r => {
+    const li = document.createElement("li");
+    li.textContent = formatRule(r);
+    rulesListEl.appendChild(li);
+  });
+}
+
+function formatRule(r) {
+  if (r.target === "ALL") return r.text;
+  const p = state.players.find(x => x.id === r.target);
+  return p ? `[${p.name}] ${r.text}` : r.text;
 }
 
 /***********************
@@ -272,25 +346,19 @@ function renderRoles() {
 function onNext() {
   if (state.gameOver) return;
 
-  // auto-show rules every 7 rounds (after completing 7 events)
+  // Every 7 completed rounds: jump to Rules slide
   if (state.sinceRulesShown >= 7) {
-    showRulesModal();
     state.sinceRulesShown = 0;
-    // do not advance round here; rules modal is just a checkpoint
+    showSlide("rules");
+    renderRulesSlide();
     return;
   }
 
-  // if no active event, start first
   startNewEvent();
 }
 
 function startNewEvent() {
-  // clear UI controls
-  timerArea.classList.add("hidden");
-  challengeControls.classList.add("hidden");
-  ruleControls.classList.add("hidden");
-  removeRuleControls.classList.add("hidden");
-  winnerArea.classList.add("hidden");
+  clearEventUI();
 
   const evType = weightedPick(EVENT_WEIGHTS).type;
 
@@ -299,8 +367,15 @@ function startNewEvent() {
   if (evType === "RULE_ADD") return startRuleAddEvent();
   if (evType === "RULE_REMOVE") return startRuleRemoveEvent();
 
-  // fallback
   startSoloEvent();
+}
+
+function clearEventUI() {
+  timerArea.classList.add("hidden");
+  challengeControls.classList.add("hidden");
+  ruleControls.classList.add("hidden");
+  removeRuleControls.classList.add("hidden");
+  winnerArea.classList.add("hidden");
 }
 
 function startTimerEvent() {
@@ -335,22 +410,20 @@ function startTimerEvent() {
 async function runChaosTimer(ev) {
   timerStartBtn.disabled = true;
 
-  // Implement “one glitch per timer event”
   if (ev.glitchType === "FREEZE") {
     await runFreezeTimer(ev.total);
   } else if (ev.glitchType === "BACKWARDS") {
     await runBackwardsTimer(ev.total);
   } else {
-    await runGlitchNumbersTimer(ev.total);
+    await runGlitchNumbersTimer();
   }
 
-  // award points to group
   awardGroupPoint(ev.group);
 
-  // finish
   eventBody.textContent = "Congratulations — point awarded. Press Next.";
   timerStartBtn.disabled = false;
-  finishEvent(/*doNotAutoStartNext*/ true);
+
+  finishEvent(true);
 }
 
 function awardGroupPoint(group) {
@@ -359,6 +432,7 @@ function awardGroupPoint(group) {
     if (group === "M" && p.gender === "M") addPoints(p.id, 1);
     if (group === "F" && p.gender === "F") addPoints(p.id, 1);
   }
+  renderRulesSlide(); // keep rules/points table current
 }
 
 function startSoloEvent() {
@@ -388,7 +462,6 @@ function startRuleAddEvent() {
   eventTitle.textContent = "Create a Rule";
   eventBody.textContent = "You’ve been chosen to add a rule.";
 
-  // target dropdown
   ruleTargetSel.innerHTML = "";
   ruleTargetSel.appendChild(new Option("All players", "ALL"));
   for (const pl of state.players) ruleTargetSel.appendChild(new Option(pl.name, pl.id));
@@ -408,7 +481,6 @@ function startRuleRemoveEvent() {
   eventTitle.textContent = "Remove a Rule";
   eventBody.textContent = "Choose one rule to remove (permanently).";
 
-  // populate rules
   removeRuleSelect.innerHTML = "";
   if (state.rules.length === 0) {
     removeRuleSelect.appendChild(new Option("No rules to remove", "-1"));
@@ -424,8 +496,7 @@ function startRuleRemoveEvent() {
   removeRuleControls.classList.remove("hidden");
 }
 
-function finishEvent(doNotAutoStartNext = false) {
-  // After each event: check win, then advance counters
+function finishEvent() {
   const winner = state.players.find(p => p.points >= WIN_POINTS);
   if (winner) {
     state.gameOver = true;
@@ -434,28 +505,20 @@ function finishEvent(doNotAutoStartNext = false) {
     return;
   }
 
-  // round increments when an event completes
   state.round += 1;
   state.sinceRulesShown += 1;
 
   renderGame();
-
-  // Do not auto-start the next event; user presses Next
-  // (So TV/host pacing stays controlled.)
 }
 
 function renderGame() {
   roundLabel.textContent = String(state.round);
 
-  // If no event active, show prompt
   if (!state.activeEvent && !state.gameOver) {
     targetLabel.textContent = "—";
     eventTitle.textContent = "Ready";
     eventBody.textContent = "Press Next to draw the next event.";
   }
-
-  // Always keep modal data current
-  if (!rulesModal.classList.contains("hidden")) renderRulesModal();
 }
 
 function showWinner(winner) {
@@ -464,80 +527,20 @@ function showWinner(winner) {
 }
 
 /***********************
- * RULES MODAL
- ***********************/
-function showRulesModal() {
-  renderRulesModal();
-  rulesModal.classList.remove("hidden");
-}
-
-function hideRulesModal() {
-  rulesModal.classList.add("hidden");
-}
-
-function renderRulesModal() {
-  // players table
-  playersTableBody.innerHTML = "";
-  for (const p of state.players) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${escapeHtml(p.name)}</td>
-      <td>${p.gender}</td>
-      <td>${escapeHtml(p.roleName)}</td>
-      <td><b>${p.points}</b></td>
-      <td>
-        <button data-act="minus" data-id="${p.id}">-</button>
-        <button data-act="plus" data-id="${p.id}">+</button>
-      </td>
-    `;
-    playersTableBody.appendChild(tr);
-  }
-
-  // attach handlers (simple delegation)
-  playersTableBody.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.dataset.id;
-      const act = btn.dataset.act;
-      addPoints(id, act === "plus" ? 1 : -1);
-      renderRulesModal();
-      renderGame();
-    });
-  });
-
-  // rules list
-  rulesListEl.innerHTML = "";
-  state.rules.forEach(r => {
-    const li = document.createElement("li");
-    li.textContent = formatRule(r);
-    rulesListEl.appendChild(li);
-  });
-}
-
-function formatRule(r) {
-  if (r.target === "ALL") return r.text;
-  const p = state.players.find(x => x.id === r.target);
-  return p ? `[${p.name}] ${r.text}` : r.text;
-}
-
-/***********************
  * TIMER GLITCHES
  ***********************/
 async function runFreezeTimer(total) {
-  // freeze once for 0–8 seconds at a random time
   const freezeAt = randInt(1, Math.max(1, total - 1));
   const freezeFor = randInt(0, 8);
 
   for (let t = total; t >= 0; t--) {
     timerDisplay.textContent = String(t).padStart(2, "0");
-    if (t === freezeAt && freezeFor > 0) {
-      await sleep(freezeFor * 1000);
-    }
+    if (t === freezeAt && freezeFor > 0) await sleep(freezeFor * 1000);
     await sleep(1000);
   }
 }
 
 async function runBackwardsTimer(total) {
-  // at a random time near the end, count up 0–8 then resume down
   const triggerAt = randInt(1, Math.max(1, total - 2));
   const upBy = randInt(0, 8);
 
@@ -546,12 +549,10 @@ async function runBackwardsTimer(total) {
     timerDisplay.textContent = String(t).padStart(2, "0");
 
     if (t === triggerAt && upBy > 0) {
-      // count up
       for (let u = 1; u <= upBy; u++) {
         await sleep(1000);
         timerDisplay.textContent = String(t + u).padStart(2, "0");
       }
-      // resume down from (t + upBy)
       t = t + upBy;
     }
 
@@ -560,8 +561,7 @@ async function runBackwardsTimer(total) {
   }
 }
 
-async function runGlitchNumbersTimer(total) {
-  // ignore "total seconds" display; show random numbers N times, end on 0.
+async function runGlitchNumbersTimer() {
   const iterations = randInt(10, 30);
   let first = randInt(0, 10);
   timerDisplay.textContent = String(first).padStart(2, "0");
@@ -578,7 +578,6 @@ async function runGlitchNumbersTimer(total) {
  * FAIR TARGET SELECTION
  ***********************/
 function pickFairPlayerId() {
-  // Eligible = those within +1 of the minimum turnsTaken
   const counts = state.players.map(p => state.turnsTaken[p.id] ?? 0);
   const min = Math.min(...counts);
 
@@ -586,7 +585,6 @@ function pickFairPlayerId() {
     .filter(p => (state.turnsTaken[p.id] ?? 0) <= min + 1)
     .map(p => p.id);
 
-  // Prefer not to repeat same person twice unless forced
   const filtered = eligible.filter(id => id !== state.lastTargetId);
   const pickFrom = filtered.length > 0 ? filtered : eligible;
 
@@ -642,20 +640,4 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, m => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
   }[m]));
-}
-
-function resetGame() {
-  // keep players but reset points/rules/rounds
-  for (const p of state.players) p.points = 0;
-  state.rules = [];
-  state.round = 1;
-  state.sinceRulesShown = 0;
-  state.turnsTaken = {};
-  for (const p of state.players) state.turnsTaken[p.id] = 0;
-  state.lastTargetId = null;
-  state.activeEvent = null;
-  state.gameOver = false;
-
-  winnerArea.classList.add("hidden");
-  renderGame();
 }
