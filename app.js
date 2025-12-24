@@ -281,26 +281,34 @@ function renderRulesSlide() {
   });
 
   // rules list with tick-to-delete
+  // rules list with numbered layout + tick-to-delete
   rulesListEl.innerHTML = "";
-
+  
   if (state.rules.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "No rules yet.";
+    li.className = "ruleRow";
+    li.innerHTML = `
+      <div class="ruleIndex">—</div>
+      <div class="ruleText">No rules yet.</div>
+      <div></div>
+    `;
     rulesListEl.appendChild(li);
     return;
   }
-
-  // Re-rendered order is the current array order (after deletion it naturally reorders)
+  
   state.rules.forEach((r, idx) => {
     const li = document.createElement("li");
+    li.className = "ruleRow";
     li.innerHTML = `
-      <label style="display:flex; gap:10px; align-items:flex-start; font-weight:600;">
+      <div class="ruleIndex">${idx + 1}.</div>
+      <div class="ruleText">${escapeHtml(r.target)}: ${escapeHtml(r.text)}</div>
+      <div class="ruleCheck">
         <input type="checkbox" data-rule-index="${idx}" />
-        <span>${escapeHtml(r.target)}: ${escapeHtml(r.text)}</span>
-      </label>
+      </div>
     `;
     rulesListEl.appendChild(li);
   });
+
 }
 
 /***********************
