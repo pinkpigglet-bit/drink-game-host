@@ -271,9 +271,12 @@ function renderRulesSlide() {
       <td>${escapeHtml(p.gender)}</td>
       <td>${escapeHtml(p.role?.name ?? "")}</td>
       <td>${p.points}</td>
-      <td><button data-action="inc" data-player-id="${p.id}">+</button></td>
-      <td><button data-action="dec" data-player-id="${p.id}">-</button></td>
+      <td>
+        <button data-action="dec" data-player-id="${p.id}">−</button>
+        <button data-action="inc" data-player-id="${p.id}">+</button>
+      </td>
     `;
+
     playersTableBody.appendChild(tr);
   });
 
