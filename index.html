@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Drink Game (Host Mode)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="wrap">
+
+    <header class="topbar">
+      <h1>Drink Game</h1>
+      <button id="openRulesBtn" class="ghost hidden">Rules</button>
+    </header>
+
+    <!-- SETUP -->
+    <section id="setupView" class="card">
+      <h2>Setup</h2>
+
+      <label>Number of players</label>
+      <select id="playerCount"></select>
+
+      <div id="playersForm" class="playersForm"></div>
+
+      <div class="row">
+        <button id="startSetupBtn" class="primary">Enter</button>
+      </div>
+
+      <p class="hint">Runs on one phone. Mirror/cast to TV if you want everyone watching.</p>
+    </section>
+
+    <!-- ROLES REVEAL -->
+    <section id="rolesView" class="card hidden">
+      <h2>Roles</h2>
+      <div id="rolesList" class="rolesList"></div>
+
+      <div class="row">
+        <button id="continueToRulesBtn" class="primary">Continue</button>
+      </div>
+    </section>
+
+    <!-- GAME VIEW -->
+    <section id="gameView" class="card hidden">
+      <div class="gameHeader">
+        <div>
+          <div class="small">Round</div>
+          <div class="big" id="roundLabel">1</div>
+        </div>
+        <div class="right">
+          <div class="small">Target</div>
+          <div class="big" id="targetLabel">—</div>
+        </div>
+      </div>
+
+      <div id="eventTitle" class="eventTitle">—</div>
+      <div id="eventBody" class="eventBody">Press Next to begin.</div>
+
+      <div id="timerArea" class="timerArea hidden">
+        <div id="timerDisplay" class="timerDisplay">00</div>
+        <button id="timerStartBtn" class="primary">Start</button>
+      </div>
+
+      <div id="challengeControls" class="row hidden">
+        <button id="failBtn">Fail</button>
+        <button id="passBtn" class="primary">Pass (+1)</button>
+      </div>
+
+      <div id="ruleControls" class="ruleControls hidden">
+        <label>Rule applies to</label>
+        <select id="ruleTarget"></select>
+
+        <label>Rule text</label>
+        <textarea id="ruleText" rows="3" placeholder="e.g., If you swear, drink."></textarea>
+
+        <div class="row">
+          <button id="saveRuleBtn" class="primary">Save Rule</button>
+        </div>
+      </div>
+
+      <div id="removeRuleControls" class="ruleControls hidden">
+        <label>Select a rule to remove</label>
+        <select id="removeRuleSelect"></select>
+        <div class="row">
+          <button id="removeRuleBtn" class="primary">Remove Rule</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <button id="nextBtn" class="primary">Next</button>
+      </div>
+
+      <div id="winnerArea" class="winnerArea hidden">
+        <div class="winnerText" id="winnerText"></div>
+        <div class="row">
+          <button id="resetBtn" class="primary">Reset Game</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RULES MODAL -->
+    <section id="rulesModal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modalCard">
+        <div class="modalHeader">
+          <h2>Rules</h2>
+          <button id="closeRulesBtn" class="ghost">Close</button>
+        </div>
+
+        <div class="playersTableWrap">
+          <table class="playersTable">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Gender</th>
+                <th>Role</th>
+                <th>Points</th>
+                <th>Adjust</th>
+              </tr>
+            </thead>
+            <tbody id="playersTableBody"></tbody>
+          </table>
+        </div>
+
+        <h3>Active rules</h3>
+        <ol id="rulesList" class="rulesList"></ol>
+
+        <p class="hint">Rules are “policed” by the players. Keep it light.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
