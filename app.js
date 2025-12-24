@@ -183,13 +183,18 @@ function showSlide(which) {
  * SETUP
  ***********************/
 function initSetup() {
-  playerCountSel.value = playerCountSel.value || "4";
+  // default to 4 players
+  if (!playerCountSel.value) playerCountSel.value = "4";
+
+  // build initial inputs
   buildPlayerInputs(parseInt(playerCountSel.value, 10));
 
-  playerCountSel.addEventListener("change", () => {
+  // IMPORTANT: allow unlimited changes (no { once: true })
+  playerCountSel.onchange = () => {
     buildPlayerInputs(parseInt(playerCountSel.value, 10));
-  }, { once: true });
+  };
 }
+
 
 function buildPlayerInputs(n) {
   playersForm.innerHTML = "";
