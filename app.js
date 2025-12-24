@@ -197,7 +197,20 @@ function initSetup() {
 
 
 function buildPlayerInputs(n) {
+  // capture existing values so changing count doesn't wipe typing
+  const existing = [];
+  const oldRows = playersForm.querySelectorAll(".playerRow");
+  oldRows.forEach((_, i) => {
+    const nameEl = $(`playerName_${i}`);
+    const genderEl = $(`playerGender_${i}`);
+    existing.push({
+      name: nameEl ? nameEl.value : "",
+      gender: genderEl ? genderEl.value : "ANY",
+    });
+  });
+
   playersForm.innerHTML = "";
+
   for (let i = 0; i < n; i++) {
     const row = document.createElement("div");
     row.className = "playerRow";
@@ -206,6 +219,7 @@ function buildPlayerInputs(n) {
     input.type = "text";
     input.placeholder = `Player ${i + 1} name`;
     input.id = `playerName_${i}`;
+    input.value = existing[i]?.name ?? "";
 
     const gender = document.createElement("select");
     gender.id = `playerGender_${i}`;
@@ -214,12 +228,14 @@ function buildPlayerInputs(n) {
       <option value="M">M</option>
       <option value="F">F</option>
     `;
+    gender.value = existing[i]?.gender ?? "ANY";
 
     row.appendChild(input);
     row.appendChild(gender);
     playersForm.appendChild(row);
   }
 }
+
 
 function onSetupEnter() {
   const n = parseInt(playerCountSel.value, 10);
