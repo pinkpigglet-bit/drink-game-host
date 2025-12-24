@@ -25,113 +25,113 @@ const ROLES = [
   {
     id: "statue",
     name: "Statue",
-    desc: "If the Statue freezes and you move or talk first, you drink.",
+    desc: `If the Statue freezes and you move or talk first, you drink.`,
     img: "assets/roles/statue.jpg"
   },
   {
-    id: "Hitler",
+    id: "hitler",
     name: "Hitler",
-    desc: "When you heil, everyone watching must follow, otherwise they must drink.",
+    desc: `When you heil, everyone watching must follow, otherwise they must drink.`,
     img: "assets/roles/hitler.jpg"
   },
   {
     id: "mime",
     name: "Mime",
-    desc: "If the Mime acts something out and you guess it wrong, you drink.",
+    desc: `If the Mime acts something out and you guess it wrong, you drink.`,
     img: "assets/roles/mime.jpg"
   },
   {
     id: "gaslighter",
     name: "Gaslighter",
-    desc: "The Gaslighter can deny any rule exists. Anyone who argues drinks.",
+    desc: `The Gaslighter can deny any rule exists. Anyone who argues drinks.`,
     img: "assets/roles/gaslighter.jpg"
   },
   {
     id: "stalker",
     name: "Stalker",
-    desc: "If you make eye contact with the stalker while hes stalking you then you drink. If the stalker gets a photo of you deemed "fucking creepy" by the group then you drink twice.",
+    desc: `If you make eye contact with the stalker while he's stalking you then you drink. If the stalker gets a photo of you deemed "fucking creepy" by the group then you drink twice.`,
     img: "assets/roles/stalker.jpg"
   },
-
   {
     id: "gambler",
     name: "Gambler",
-    desc: "If anyone makes any bets with you for drinks you must take it on. The gambler gets first pick",
+    desc: `If anyone makes any bets with you for drinks you must take it on. The gambler gets first pick.`,
     img: "assets/roles/gambler.jpg"
   },
   {
-    id: "closet gay",
-    name: "closet gay",
-    desc: "The closet gay will pick an action and show the group. When players see them do this action they must match it with their own. Failure to do so will result in a drink.",
+    id: "closet_gay",
+    name: "Closet Gay",
+    desc: `The Closet Gay will pick an action and show the group. When players see them do this action they must match it. Failure to do so results in a drink.`,
     img: "assets/roles/closetgay.jpg"
   },
   {
-    id: "Kim Jong Un",
+    id: "kim_jong_un",
     name: "Kim Jong Un",
-    desc: "There is no wrong with the mighty leader. If they see something that they want the others must give it to them or drink.",
+    desc: `There is no wrong with the mighty leader. If they see something that they want the others must give it to them or drink.`,
     img: "assets/roles/kimjongun.jpg"
   },
   {
-    id: "Dexter",
+    id: "dexter",
     name: "Dexter",
-    desc: "If you are alone with one other person, you may kill them, They stay in that spot until found. If all players are killed then everyone else finished a new vessel.",
+    desc: `If you are alone with one other person, you may kill them. They stay in that spot until found. If all players are killed then everyone else finishes a new vessel.`,
     img: "assets/roles/dexter.jpg"
   },
   {
-    id: "Doakes",
+    id: "doakes",
     name: "Doakes",
-    desc: "When you squnit fucking hard at another mother fucker they have to squint back otherwise they drink.",
+    desc: `When you squint hard at someone they have to squint back otherwise they drink.`,
     img: "assets/roles/doakes.jpg"
   },
   {
-    id: "Darth Vader",
+    id: "darth_vader",
     name: "Darth Vader",
-    desc: "The force is strong with you. You may use it to "choke" anyone that looks at you, if they break before you finish they drink.",
+    desc: `The force is strong with you. You may use it to "choke" anyone that looks at you. If they break before you finish they drink.`,
     img: "assets/roles/darthvader.jpg"
   },
   {
-    id: "Gollum",
+    id: "gollum",
     name: "Gollum",
-    desc: "My precious, if i collect anything of anyone elses i dont have to give it back, but i will for a cost, x amount of drinks.",
+    desc: `My precious. If I collect anything of anyone else's I don't have to give it back, but I will for a cost: X drinks.`,
     img: "assets/roles/gollum.jpg"
   },
   {
-    id: "Yoda",
+    id: "yoda",
     name: "Yoda",
-    desc: "when yoda speaks to others in his yoda voice they must first try to answer as a wookie, any answers that anger yoda are worth a drink.",
+    desc: `When Yoda speaks to others in his Yoda voice they must answer as a Wookie. Any answers that anger Yoda are worth a drink.`,
     img: "assets/roles/yoda.jpg"
   },
   {
-    id: "Hulk",
+    id: "hulk",
     name: "Hulk",
-    desc: "If hulk passes you something smashable, you must smash it, or take a drink.",
+    desc: `If Hulk passes you something smashable, you must smash it or take a drink.`,
     img: "assets/roles/hulk.jpg"
   },
   {
-    id: "Simba",
+    id: "simba",
     name: "Simba",
-    desc: "Once the mark is aquired, anytime a bevarage "simba" is lifted above their head, the other players must sing the chant, otherwise drink.",
+    desc: `Once the mark is acquired, anytime a beverage "Simba" is lifted above their head, the other players must sing the chant, otherwise drink.`,
     img: "assets/roles/simba.jpg"
   },
   {
-    id: "ET",
+    id: "et",
     name: "ET",
-    desc: "If ET, says "phone home", everyone else must send them a text with a number of drinks to take. ET then assigns the drinks to the last to do so.",
+    desc: `If ET says "phone home", everyone else must send them a text with a number of drinks to take. ET assigns the drinks to the last to do so.`,
     img: "assets/roles/et.jpg"
   },
   {
-    id: "Patrick",
+    id: "patrick",
     name: "Patrick",
-    desc: "Patrick can hide something under something, after giving instruction on what to find and in what location the others must find it. everyone who doesnt find the object drinks.",
+    desc: `Patrick can hide something under something. After giving instructions on what to find and where, everyone who doesn't find it drinks.`,
     img: "assets/roles/patrick.jpg"
   },
   {
-    id: "Michael",
+    id: "michael",
     name: "Michael",
-    desc: "Anytime someone is walking with, towards or around, Michael they must perform parkour, any unsatifactory pakour, michael will dish out a drink.",
+    desc: `Anytime someone is walking with, towards, or around Michael they must perform parkour. Any unsatisfactory parkour: Michael assigns a drink.`,
     img: "assets/roles/michael.jpg"
   }
 ];
+
 
 /***********************
  * STATE
