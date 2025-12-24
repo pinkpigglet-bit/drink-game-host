@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Drink Game (Host Mode)</title>
+  <title>Pass-the-Phone Game</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,35 +11,44 @@
 
     <!-- TITLE SLIDE -->
     <section id="titleView" class="card titleSlide">
-      <div class="titleBig">Jacob’s Drinking Game</div>
+      <div class="titleBig">Pass-the-Phone Game</div>
       <button id="titleNextBtn" class="nextArrow" aria-label="Next">→</button>
     </section>
 
     <!-- SETUP SLIDE -->
     <section id="setupView" class="card hidden">
       <h2>Setup</h2>
+      <div class="small">Add players (names are used everywhere).</div>
 
-      <label>Number of players</label>
-      <select id="playerCount"></select>
+      <label for="playerCount">How many players?</label>
+      <select id="playerCount">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+      </select>
 
       <div id="playersForm" class="playersForm"></div>
 
       <div class="row">
-        <button id="startSetupBtn" class="primary">Enter</button>
+        <button id="startSetupBtn" class="primary">Assign Roles</button>
       </div>
     </section>
 
-    <!-- ROLES SLIDESHOW -->
+    <!-- ROLES SLIDE -->
     <section id="rolesView" class="card hidden">
       <h2>Roles</h2>
+      <div class="small">Pass the phone. Each player reads their role.</div>
 
       <div class="roleSlide">
         <div class="roleName" id="rolePlayerName">—</div>
         <div class="roleTitle" id="roleTitle">—</div>
         <div class="roleDesc" id="roleDesc">—</div>
+        <div class="small" id="roleProgress">—</div>
       </div>
-
-      <div class="small" id="roleProgress">1 / 1</div>
 
       <button id="rolesNextBtn" class="nextArrow" aria-label="Next">→</button>
     </section>
@@ -47,16 +56,16 @@
     <!-- RULES SLIDE -->
     <section id="rulesView" class="card hidden">
       <h2>Rules</h2>
+      <div class="small">Review players and active rules. (Rule editing removed for now.)</div>
 
       <div class="playersTableWrap">
         <table class="playersTable">
           <thead>
             <tr>
+              <th>#</th>
               <th>Player</th>
               <th>Gender</th>
               <th>Role</th>
-              <th>Points</th>
-              <th>Adjust</th>
             </tr>
           </thead>
           <tbody id="playersTableBody"></tbody>
@@ -69,12 +78,25 @@
       <button id="rulesNextBtn" class="nextArrow" aria-label="Next">→</button>
     </section>
 
-    <!-- GAME (EVENT SLIDES) -->
+    <!-- START GAME SLIDE -->
+    <section id="startView" class="card hidden titleSlide">
+      <div style="text-align:center; width:100%;">
+        <div class="titleBig" style="font-size:34px;">Start Game</div>
+        <div class="small" style="margin-top:10px;">
+          When you press Start, the game will pick a random event (stub) and show it.
+        </div>
+        <div class="row" style="margin-top:18px;">
+          <button id="startGameBtn" class="primary">Start</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME (EVENT LOOP) -->
     <section id="gameView" class="card hidden">
       <div class="gameHeader">
         <div>
           <div class="small">Round</div>
-          <div class="big" id="roundLabel">1</div>
+          <div class="big" id="roundLabel">0</div>
         </div>
         <div class="right">
           <div class="small">Target</div>
@@ -82,44 +104,11 @@
         </div>
       </div>
 
-      <div id="eventTitle" class="eventTitle">—</div>
-      <div id="eventBody" class="eventBody">Press Next to begin.</div>
+      <div id="eventTitle" class="eventTitle">Ready</div>
+      <div id="eventBody" class="eventBody">Press Next to start the first event.</div>
 
-      <div id="timerArea" class="timerArea hidden">
-        <div id="timerDisplay" class="timerDisplay">00</div>
-        <button id="timerStartBtn" class="primary">Start</button>
-      </div>
-
-      <div id="challengeControls" class="row hidden">
-        <button id="failBtn">Fail</button>
-        <button id="passBtn" class="primary">Pass (+1)</button>
-      </div>
-
-      <div id="ruleControls" class="ruleControls hidden">
-        <label>Rule applies to</label>
-        <select id="ruleTarget"></select>
-
-        <label>Rule text</label>
-        <textarea id="ruleText" rows="3" placeholder="e.g., If you swear, drink."></textarea>
-
-        <div class="row">
-          <button id="saveRuleBtn" class="primary">Save Rule</button>
-        </div>
-      </div>
-
-      <div id="removeRuleControls" class="ruleControls hidden">
-        <label>Select a rule to remove</label>
-        <select id="removeRuleSelect"></select>
-        <div class="row">
-          <button id="removeRuleBtn" class="primary">Remove Rule</button>
-        </div>
-      </div>
-
-      <div id="winnerArea" class="winnerArea hidden">
-        <div class="winnerText" id="winnerText"></div>
-        <div class="row">
-          <button id="resetBtn" class="primary">Reset Game</button>
-        </div>
+      <div class="row" style="margin-top:16px;">
+        <button id="resetBtn">Reset (Back to Title)</button>
       </div>
 
       <button id="nextBtn" class="nextArrow" aria-label="Next">→</button>
