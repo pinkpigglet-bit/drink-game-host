@@ -9,6 +9,8 @@
 /***********************
  * CONFIG
  ***********************/
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = 13;
 
 /**
  * WRITE YOUR PREDETERMINED ACTIVE RULES HERE.
@@ -289,11 +291,11 @@ function initSetup() {
   if (!playerCountSel.value) playerCountSel.value = "4";
 
   // build initial inputs
-  buildPlayerInputs(parseInt(playerCountSel.value, 10));
+  buildPlayerInputs(clampInt(parseInt(playerCountSel.value, 10), MIN_PLAYERS, MAX_PLAYERS));
 
   // IMPORTANT: allow unlimited changes (no { once: true })
   playerCountSel.onchange = () => {
-    buildPlayerInputs(parseInt(playerCountSel.value, 10));
+    buildPlayerInputs(clampInt(parseInt(playerCountSel.value, 10), MIN_PLAYERS, MAX_PLAYERS));
   };
 }
 
@@ -340,7 +342,8 @@ function buildPlayerInputs(n) {
 
 
 function onSetupEnter() {
-  const n = parseInt(playerCountSel.value, 10);
+  const n = clampInt(parseInt(playerCountSel.value, 10), MIN_PLAYERS, MAX_PLAYERS);
+
   const players = [];
 
   for (let i = 0; i < n; i++) {
@@ -521,4 +524,8 @@ function escapeHtml(str) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+function clampInt(n, min, max) {
+  const x = Number.isFinite(n) ? n : min;
+  return Math.max(min, Math.min(max, x));
 }
