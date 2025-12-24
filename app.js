@@ -1,16 +1,26 @@
 /***********************
  * CORE (simplified scaffold)
  * - Keeps: Title -> Setup (names) -> Roles -> Rules -> Start Game -> Game Loop
- * - Removes: all concrete event UIs (timer / pass-fail / rule add-remove / winner)
- * - Provides: a stub event picker so you can implement/test events one-by-one.
+ * - Rules page updated:
+ *   - Player table: Player, Gender, Role, Total Points, +, -
+ *   - Active rules: predefined BASE_RULES + tick-to-delete
  ***********************/
 
 /***********************
  * CONFIG
  ***********************/
+
+/**
+ * WRITE YOUR PREDETERMINED ACTIVE RULES HERE.
+ * These load into state.rules at reset.
+ *
+ * target options you can use:
+ *   "ALL", "M", "F", or a specific player name later if you want.
+ */
 const BASE_RULES = [
-  // Optional starting rules:
-  // { target: "ALL", text: "No phones on the table." },
+  { target: "ALL", text: "No phones on the table." },
+  { target: "ALL", text: "If you swear, +1 point." },
+  { target: "ALL", text: "If you laugh at your own joke, +1 point." },
 ];
 
 const ROLES = [
@@ -30,8 +40,8 @@ let roleIndex = 0;
 
 function resetState() {
   return {
-    players: [],     // [{ id, name, gender, role }]
-    rules: [...BASE_RULES],
+    players: [],     // [{ id, name, gender, role, points }]
+    rules: [...BASE_RULES], // predetermined rules start here
     round: 0,
     lastTargetId: null,
     activeEvent: null,
@@ -114,6 +124,42 @@ resetBtn.addEventListener("click", () => {
   showSlide("title");
 });
 
+/**
+ * Event delegation for:
+ *  - Points +/- buttons
+ *  - Rule tick-to-delete
+ *
+ * This avoids listener stacking as we re-render.
+ */
+playersTableBody.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-action][data-player-id]");
+  if (!btn) return;
+
+  const playerId = btn.getAttribute("data-player-id");
+  const action = btn.getAttribute("data-action");
+  const p = state.players.find(x => x.id === playerId);
+  if (!p) return;
+
+  if (action === "inc") p.points += 1;
+  if (action === "dec") p.points -= 1;
+
+  renderRulesSlide();
+});
+
+rulesListEl.addEventListener("change", (e) => {
+  const cb = e.target.closest("input[type='checkbox'][data-rule-index]");
+  if (!cb) return;
+
+  // If checked, delete the rule immediately and re-render
+  if (cb.checked) {
+    const idx = parseInt(cb.getAttribute("data-rule-index"), 10);
+    if (!Number.isNaN(idx) && idx >= 0 && idx < state.rules.length) {
+      state.rules.splice(idx, 1);
+      renderRulesSlide();
+    }
+  }
+});
+
 /***********************
  * SLIDE HELPERS
  ***********************/
@@ -137,7 +183,6 @@ function showSlide(which) {
  * SETUP
  ***********************/
 function initSetup() {
-  // default to 4 players
   playerCountSel.value = playerCountSel.value || "4";
   buildPlayerInputs(parseInt(playerCountSel.value, 10));
 
@@ -183,6 +228,7 @@ function onSetupEnter() {
       name,
       gender,
       role: null,
+      points: 0, // NEW
     });
   }
 
@@ -195,7 +241,6 @@ function onSetupEnter() {
 }
 
 function assignRolesRandomly() {
-  // shuffle roles and assign in order (wrap if more players than roles)
   const shuffled = [...ROLES].sort(() => Math.random() - 0.5);
   for (let i = 0; i < state.players.length; i++) {
     state.players[i].role = shuffled[i % shuffled.length];
@@ -219,30 +264,40 @@ function renderRoleSlide() {
 function renderRulesSlide() {
   // player table
   playersTableBody.innerHTML = "";
-  state.players.forEach((p, idx) => {
+  state.players.forEach((p) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${idx + 1}</td>
       <td>${escapeHtml(p.name)}</td>
       <td>${escapeHtml(p.gender)}</td>
       <td>${escapeHtml(p.role?.name ?? "")}</td>
+      <td>${p.points}</td>
+      <td><button data-action="inc" data-player-id="${p.id}">+</button></td>
+      <td><button data-action="dec" data-player-id="${p.id}">-</button></td>
     `;
     playersTableBody.appendChild(tr);
   });
 
-  // rules list
+  // rules list with tick-to-delete
   rulesListEl.innerHTML = "";
+
   if (state.rules.length === 0) {
     const li = document.createElement("li");
     li.textContent = "No rules yet.";
     rulesListEl.appendChild(li);
-  } else {
-    state.rules.forEach((r) => {
-      const li = document.createElement("li");
-      li.textContent = `${r.target}: ${r.text}`;
-      rulesListEl.appendChild(li);
-    });
+    return;
   }
+
+  // Re-rendered order is the current array order (after deletion it naturally reorders)
+  state.rules.forEach((r, idx) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <label style="display:flex; gap:10px; align-items:flex-start; font-weight:600;">
+        <input type="checkbox" data-rule-index="${idx}" />
+        <span>${escapeHtml(r.target)}: ${escapeHtml(r.text)}</span>
+      </label>
+    `;
+    rulesListEl.appendChild(li);
+  });
 }
 
 /***********************
@@ -261,7 +316,6 @@ function startGameLoop() {
   state.lastTargetId = null;
   state.activeEvent = null;
 
-  // initialise the game screen
   roundLabel.textContent = "0";
   targetLabel.textContent = "—";
   eventTitle.textContent = "Ready";
@@ -275,7 +329,6 @@ function startNewEvent() {
   const ev = weightedPick(EVENT_DEFS);
   state.activeEvent = ev.id;
 
-  // pick a target player for now (events can override later)
   const target = pickFairPlayer();
   state.lastTargetId = target?.id ?? null;
   targetLabel.textContent = target?.name ?? "ALL";
@@ -312,7 +365,6 @@ function pickFairPlayer() {
   if (!state.players.length) return null;
   if (state.players.length === 1) return state.players[0];
 
-  // avoid same player twice in a row where possible
   const pool = state.players.filter(p => p.id !== state.lastTargetId);
   const use = pool.length ? pool : state.players;
   return use[Math.floor(Math.random() * use.length)];
