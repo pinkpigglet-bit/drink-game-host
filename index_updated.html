@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>granduce drinking game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+
+    <!-- TITLE SLIDE -->
+    <section id="titleView" class="card titleSlide">
+      <div class="titleBig">Pass-the-Phone Game</div>
+      <button id="titleNextBtn" class="nextArrow" aria-label="Next">→</button>
+    </section>
+
+    <!-- SETUP SLIDE -->
+    <section id="setupView" class="card hidden">
+      <h2>Setup</h2>
+      <div class="small">Add players (names are used everywhere).</div>
+
+      <label for="playerCount">How many players?</label>
+      <select id="playerCount">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+      </select>
+
+
+      <div id="playersForm" class="playersForm"></div>
+
+      <div class="row">
+        <button id="startSetupBtn" class="primary">Assign Roles</button>
+      </div>
+    </section>
+
+    <!-- ROLES SLIDE -->
+    <section id="rolesView" class="card hidden">
+      <h2>Roles</h2>
+      <div class="small">Pass the phone. Each player reads their role.</div>
+
+      <div class="roleSlide">
+        <img id="roleImg" class="roleImg hidden" alt="Role image" />
+        <div class="roleName" id="rolePlayerName">—</div>
+        <div class="roleTitle" id="roleTitle">—</div>
+        <div class="roleDesc" id="roleDesc">—</div>
+        <div class="small" id="roleProgress">—</div>
+      </div>
+
+
+      <button id="rolesNextBtn" class="nextArrow" aria-label="Next">→</button>
+    </section>
+
+    <!-- RULES SLIDE -->
+    <section id="rulesView" class="card hidden">
+      <h2>Information</h2>
+    
+      <div class="playersTableWrap">
+        <table class="playersTable">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Gender</th>
+              <th>Role</th>
+              <th>Total Points</th>
+              <th>Adjust</th>
+            </tr>
+          </thead>
+          <tbody id="playersTableBody"></tbody>
+        </table>
+      </div>
+    
+      <h3>Rules</h3>
+      <ol id="rulesList" class="rulesList rulesGrid"></ol>
+    
+      <button id="rulesNextBtn" class="nextArrow" aria-label="Next">→</button>
+    </section>
+
+
+    <!-- START GAME SLIDE -->
+    <section id="startView" class="card hidden titleSlide">
+      <div style="text-align:center; width:100%;">
+        <div class="titleBig" style="font-size:34px;">Start Game</div>
+        <div class="small" style="margin-top:10px;">
+          When you press Start, the game will pick a random event (stub) and show it.
+        </div>
+        <div class="row" style="margin-top:18px;">
+          <button id="startGameBtn" class="primary">Start</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME (EVENT LOOP) -->
+    <section id="gameView" class="card hidden">
+      <div class="gameHeader">
+        <div>
+          <div class="small">Round</div>
+          <div class="big" id="roundLabel">0</div>
+        </div>
+        <div class="right">
+          <div class="small">Target</div>
+          <div class="big" id="targetLabel">—</div>
+        </div>
+      </div>
+
+      <div id="eventTitle" class="eventTitle">Ready</div>
+      <div id="eventBody" class="eventBody">Press Next to start the first event.</div>
+      <div id="eventActions" class="row hidden" style="margin-top:16px;"></div>
+
+
+      <div class="row" style="margin-top:16px;">
+        <button id="resetBtn">Reset (Back to Title)</button>
+      </div>
+
+      <button id="nextBtn" class="nextArrow" aria-label="Next">→</button>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
