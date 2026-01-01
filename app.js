@@ -1,3 +1,6 @@
+console.log("APP VERSION: SOLO CHALLENGE UPDATE LOADED", new Date().toISOString());
+
+
 /***********************
  * CORE (simplified scaffold)
  * - Keeps: Title -> Setup (names) -> Roles -> Rules -> Start Game -> Game Loop
